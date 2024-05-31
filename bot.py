@@ -134,7 +134,6 @@ async def sketch(ctx, *, args):
     author = ctx.author if hasattr(ctx, 'author') else ctx.message.author
     user_id = author.id
 
-    # Regular expressions to capture flags and their arguments
     pattern = re.compile(r"--(\w+)(?:\s+([^--]+))?")
     matches = pattern.findall(args)
     options = {flag: value.strip() if value else None for flag, value in matches}
@@ -143,7 +142,6 @@ async def sketch(ctx, *, args):
     scale = 1.2
     max_generations = 4
 
-    # Input options handling
     if 'seed' in options:
         seed = int(options['seed']) if options['seed'].isdigit() and int(options['seed']) > 0 else seed
     if 'scale' in options:
@@ -158,16 +156,13 @@ async def sketch(ctx, *, args):
     else:
         num_generations = 1
 
-    # Remove flags with their arguments from the original args
     prompt = re.sub(r"(?:--\w+\s+[^--]+|--\w+)", "", args).strip()
 
-    # Remove no_terms from the prompt (if applicable)
     if 'no' in options and options['no']:
         no_terms = options['no'].split(',')
         for term in no_terms:
             prompt = prompt.replace(term.strip(), "").strip()
 
-    # Continue with your logic
     prompt = replace_wildcards(prompt)
     current_credits = get_user_credits(user_id)
     min_required_credits = 1
@@ -189,7 +184,7 @@ async def sketch(ctx, *, args):
     for i in range(num_generations):
         input_data = {
             "main_face_image": attachment_urls[0],
-            "num_samples": 1,
+            "num_samples": 1, # we set this to 1 and iterate on the client side to control the seed
             "seed": current_seed,
             "prompt": prompt,
             "cfg_scale": scale,
@@ -206,7 +201,7 @@ async def sketch(ctx, *, args):
 
         current_seed += 1
 
-    print(f"Generations Queued: {num_generations}")  # Print the generation queue count only once
+    print(f"Generations Queued: {num_generations}")
 
     all_results = await asyncio.gather(*tasks)
     for idx, results in enumerate(all_results):
@@ -216,9 +211,9 @@ async def sketch(ctx, *, args):
             deduct_credits(user_id, cost_in_credits)
             current_credits -= cost_in_credits
 
-            seed_info = f"🌱`{seed + idx}`"  # Use the initial seed and add the index
+            seed_info = f"🌱`{seed + idx}`"
 
-            for image_idx, image_url in enumerate(output):  # Loop through all the image URLs in the list
+            for image_idx, image_url in enumerate(output):
                 image_data = await download_image(image_url)
                 file = discord.File(fp=io.BytesIO(image_data), filename=f"image_{idx}_{image_idx}.webp")
                 embed = discord.Embed(description=prompt, color=discord.Color.blue())
