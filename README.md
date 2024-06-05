@@ -1,6 +1,4 @@
-# Sketch-Face README
-
-## Overview
+# README
 
 Sketch-Face is a Discord bot designed to generate likeness images based on an input image of your face! Connects to [PULID via Replicate](https://replicate.com/zsxkib/pulid), so a Replicate account is required to use this. Eventually I would like to make a fully local version once I upgrade my hardware.
 
