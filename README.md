@@ -14,8 +14,7 @@ Sketch-Face is a Discord bot designed to generate likeness images based on an in
 1. **Clone the repository:**
 
     ```
-    git clone coalescentdivide/sketch-face
-    cd coalescentdivide/sketch-face
+    git clone https://github.com/coalescentdivide/sketch-face.git
     ```
 
 2. **Install dependencies:**
